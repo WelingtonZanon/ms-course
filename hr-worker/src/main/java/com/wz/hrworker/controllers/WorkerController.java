@@ -2,7 +2,10 @@ package com.wz.hrworker.controllers;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,11 +19,16 @@ import com.wz.hrworker.repositories.WorkerRepository;
 @RequestMapping(value = "/workers")
 public class WorkerController {
 	
+	private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
+	
 	private final WorkerRepository repository;
 	
+	private final Environment env;
+	
 	@Autowired
-	public WorkerController(WorkerRepository repository){
+	public WorkerController(WorkerRepository repository, Environment env){
 		this.repository = repository;
+		this.env = env;
 	}
 
 	@GetMapping
@@ -31,6 +39,9 @@ public class WorkerController {
 	
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<Worker> findById(@PathVariable Long id){
+		
+		logger.info("PORT = " + env.getProperty("local.server.port"));
+		
 		Worker obj = repository.findById(id).get();
 		return ResponseEntity.ok(obj);
 	}
